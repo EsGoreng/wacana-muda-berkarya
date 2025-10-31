@@ -1,0 +1,53 @@
+@import "tailwindcss";
+@import "flowbite/src/themes/default";
+
+@plugin "flowbite/plugin";
+@plugin "flowbite-typography";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source "../../node_modules/flowbite";
+
+@source inline("dark:bg-red-100, dark:bg-blue-100, dark:bg-green-100, dark:bg-yellow-100");
+
+@theme {
+    /* --- Shade Lebih Terang --- */
+    /* Ini adalah warna-warna yang lebih terang dari warna utama Anda */
+    --color-primary-50: oklch(0.97 0.03 265.31);
+    --color-primary-100: oklch(0.85 0.08 265.31);
+    --color-primary-200: oklch(0.65 0.13 265.31); /* (Secara perseptual, ini seperti '500' normal) */
+    --color-primary-300: oklch(0.50 0.14 265.31);
+    --color-primary-400: oklch(0.38 0.13 265.31);
+
+    /* --- WARNA UTAMA ANDA --- */
+    /* Lightness: 27% (Sangat Gelap) */
+    --color-primary-500: oklch(0.2701 0.1121 265.31);
+
+    /* --- Shade Sangat Gelap --- */
+    /* Warna-warna ini akan sangat berdekatan dan hampir hitam */
+    --color-primary-600: oklch(0.23 0.10 265.31);
+    --color-primary-700: oklch(0.20 0.09 265.31);
+    --color-primary-800: oklch(0.17 0.08 265.31);
+    --color-primary-900: oklch(0.14 0.07 265.31);
+    --color-primary-950: oklch(0.11 0.05 265.31);
+
+    --font-body: Inter, ui-sans-serif, system-ui, -apple-system, system-ui,
+        "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+
+    --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, system-ui,
+        "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+.dark {
+
+}
