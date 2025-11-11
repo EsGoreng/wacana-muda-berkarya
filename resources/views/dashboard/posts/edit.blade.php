@@ -29,7 +29,7 @@
                     <form method="POST" action="{{ route('dashboard.posts.update', $post) }}"
                         enctype="multipart/form-data">
                         @csrf
-                        @method('PATCH') <div class="mb-4">
+                        @method('PUT') <div class="mb-4">
                             <label for="title" class="block mb-2 text-sm font-medium text-gray-900">Title</label>
                             <input type="text" id="title" name="title" value="{{ old('title', $post->title) }}"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
@@ -80,10 +80,10 @@
                         <div class="mb-4">
                             <label for="body" class="block mb-2 text-sm font-medium text-gray-900">Body</label>
 
-                            <input type="hidden" id="body" name="body" value="{{ old('body') }}">
+                            <input type="hidden" id="body" name="body" value="{{ old('body', $post->body) }}">
 
                             <div id="editor" style="height: 300px;">
-                                {!! old('body') !!}
+                                {!! old('body', $post->body) !!}
                             </div>
 
                             @error('body')
