@@ -69,7 +69,7 @@
                                     style="display: none;">
                             @endif
 
-                            <input type="file" id="image" name="image">
+                            <input type="file" id="image" name="image" accept="image/*" onchange="previewImage()">
 
                             @error('image')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>

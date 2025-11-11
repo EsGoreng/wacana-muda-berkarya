@@ -45,7 +45,7 @@
                             <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Post
                                 Image</label>
 
-                            <input type="file" id="image" name="image">
+                            <input type="file" id="image" name="image" accept="image/*">
 
                             @error('image')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>

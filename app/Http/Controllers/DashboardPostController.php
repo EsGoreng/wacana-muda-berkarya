@@ -50,6 +50,33 @@ class DashboardPostController extends Controller
     public function store(Request $request)
     {
         // --- TAHAP 1: VALIDASI (Sesuai Roadmap) ---
+        // Debug logging: help determine whether an UploadedFile is received for 'image'
+        $file = $request->file('image');
+        $fileName = null;
+        $fileType = null;
+        if ($file) {
+            if (is_array($file)) {
+                $names = [];
+                $types = [];
+                foreach ($file as $f) {
+                    $names[] = $f->getClientOriginalName();
+                    $types[] = $f->getClientMimeType();
+                }
+                $fileName = implode(',', $names);
+                $fileType = implode(',', $types);
+            } else {
+                $fileName = $file->getClientOriginalName();
+                $fileType = $file->getClientMimeType();
+            }
+        }
+
+        logger()->info('Image debug store', [
+            'hasFile' => $request->hasFile('image'),
+            'fileClass' => is_object($file) ? get_class($file) : (is_array($file) ? 'array' : null),
+            'fileName' => $fileName,
+            'fileType' => $fileType,
+        ]);
+
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -129,6 +156,33 @@ class DashboardPostController extends Controller
             'body' => 'required|string',
             'image' => 'image|file|max:2048', // Tambahkan validasi gambar
         ];
+
+        // Debug logging: help determine whether an UploadedFile is received for 'image' on update
+        $file = $request->file('image');
+        $fileName = null;
+        $fileType = null;
+        if ($file) {
+            if (is_array($file)) {
+                $names = [];
+                $types = [];
+                foreach ($file as $f) {
+                    $names[] = $f->getClientOriginalName();
+                    $types[] = $f->getClientMimeType();
+                }
+                $fileName = implode(',', $names);
+                $fileType = implode(',', $types);
+            } else {
+                $fileName = $file->getClientOriginalName();
+                $fileType = $file->getClientMimeType();
+            }
+        }
+
+        logger()->info('Image debug update', [
+            'hasFile' => $request->hasFile('image'),
+            'fileClass' => is_object($file) ? get_class($file) : (is_array($file) ? 'array' : null),
+            'fileName' => $fileName,
+            'fileType' => $fileType,
+        ]);
 
         $validatedData = $request->validate($rules);
 
