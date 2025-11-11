@@ -21,6 +21,7 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
+        "filepond": "^4.32.10",
         "quill": "^2.0.3"
     }
 }

@@ -56,32 +56,36 @@
                             @enderror
                         </div>
 
-                        
-                    <div class="mb-4">
-                        <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Post Image</label>
 
-                        @if ($post->image)
-                            <img src="{{ asset('storage/' . $post->image) }}"
-                                class="img-preview w-full max-w-sm h-auto object-cover rounded-lg mb-2 border">
-                        @else
-                            <img class="img-preview w-full max-w-sm h-auto object-cover rounded-lg mb-2 border"
-                                style="display: none;">
-                        @endif
+                        <div class="mb-4">
+                            <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Post
+                                Image</label>
 
-                        <input type="file" id="image" name="image"
-                            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
-                            onchange="previewImage()">
-                        @error('image')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                            @if ($post->image)
+                                <img src="{{ asset('storage/' . $post->image) }}"
+                                    class="img-preview w-full max-w-sm h-auto object-cover rounded-lg mb-2 border">
+                            @else
+                                <img class="img-preview w-full max-w-sm h-auto object-cover rounded-lg mb-2 border"
+                                    style="display: none;">
+                            @endif
+
+                            <input type="file" id="image" name="image">
+
+                            @error('image')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
 
 
                         <div class="mb-4">
                             <label for="body" class="block mb-2 text-sm font-medium text-gray-900">Body</label>
-                            <textarea id="body" name="body" rows="8"
-                                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                required>{{ old('body', $post->body) }}</textarea>
+
+                            <input type="hidden" id="body" name="body" value="{{ old('body') }}">
+
+                            <div id="editor" style="height: 300px;">
+                                {!! old('body') !!}
+                            </div>
+
                             @error('body')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
