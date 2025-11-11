@@ -63,22 +63,40 @@ class DashboardPostController extends Controller
             $imageData = json_decode($request->input('image'), true);
 
             // Cek jika datanya valid
-            if (isset($imageData['data'])) {
-                $data = $imageData['data'];
+            if (!empty($imageData['data'])) {
+                $raw = $imageData['data'];
 
-                // Pisahkan data base64
-                @list($type, $data) = explode(';', $data);
-                @list(, $data)      = explode(',', $data);
-                $data = base64_decode($data);
+                // Jika raw mengandung data URI prefix (data:<mime>;base64,xxxxx), ambil bagian setelah koma
+                if (strpos($raw, 'base64,') !== false) {
+                    $parts = explode('base64,', $raw, 2);
+                    $b64 = $parts[1] ?? '';
+                } else {
+                    // Bisa jadi plugin hanya mengirim base64 tanpa prefix
+                    $b64 = $raw;
+                }
 
-                // Buat nama file unik
-                $filename = 'post-images/' . Str::uuid() . '.' . ($imageData['type'] == 'image/jpeg' ? 'jpg' : 'png');
+                $decoded = base64_decode($b64);
 
-                // Simpan file ke storage
-                Storage::disk('public')->put($filename, $data);
+                // Pastikan decode berhasil dan data tidak kosong sebelum menyimpan
+                if ($decoded !== false && strlen($decoded) > 0) {
+                    // Tentukan ekstensi dari tipe MIME jika tersedia
+                    $mime = $imageData['type'] ?? null;
+                    $ext = 'png';
+                    if ($mime === 'image/jpeg' || $mime === 'image/jpg') {
+                        $ext = 'jpg';
+                    } elseif ($mime === 'image/png') {
+                        $ext = 'png';
+                    }
 
-                // Simpan path ke database
-                $validatedData['image'] = $filename;
+                    // Buat nama file unik
+                    $filename = 'post-images/' . Str::uuid() . '.' . $ext;
+
+                    // Simpan file ke storage
+                    Storage::disk('public')->put($filename, $decoded);
+
+                    // Simpan path ke database
+                    $validatedData['image'] = $filename;
+                }
             }
         } else {
             $validatedData['image'] = null;
@@ -144,60 +162,51 @@ class DashboardPostController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'body' => 'required|string',
-            'image' => 'nullable|string', // <- Diubah dari 'image|file'
+            'image' => 'nullable|string',
         ]);
 
         // 3. Logika Update Gambar (Diubah untuk FileEncode)
         if ($request->input('image')) {
-            // Ada gambar baru (Base64) yang di-upload
-
-            // Cek data JSON dari Filepond
+            // Ada gambar baru atau aksi pada input image
             $imageData = json_decode($request->input('image'), true);
 
-            if (isset($imageData['data'])) {
-                // 1. Hapus gambar lama (jika ada)
-                if ($post->image) {
-                    Storage::disk('public')->delete($post->image);
-                }
-
-                // 2. Dekode data Base64
-                $data = $imageData['data'];
-                @list($type, $data) = explode(';', $data);
-                @list(, $data)      = explode(',', $data);
-                $data = base64_decode($data);
-
-                // 3. Buat nama file unik
-                $ext = ($imageData['type'] == 'image/jpeg' ? 'jpg' : 'png');
-                $filename = 'post-images/' . Str::uuid() . '.' . $ext;
-
-                // 4. Simpan file baru
-                Storage::disk('public')->put($filename, $data);
-
-                // 5. Set path baru untuk divalidasi
-                $validatedData['image'] = $filename;
-            } else if (empty($imageData)) {
-                // Jika input 'image' ada tapi datanya kosong 
-                // (misal: user menghapus gambar di Filepond)
-
+            if (!empty($imageData['data'])) {
                 // Hapus gambar lama (jika ada)
                 if ($post->image) {
                     Storage::disk('public')->delete($post->image);
                 }
-                $validatedData['image'] = null; // Set jadi null
+
+                $raw = $imageData['data'];
+                if (strpos($raw, 'base64,') !== false) {
+                    $parts = explode('base64,', $raw, 2);
+                    $b64 = $parts[1] ?? '';
+                } else {
+                    $b64 = $raw;
+                }
+
+                $decoded = base64_decode($b64);
+
+                if ($decoded !== false && strlen($decoded) > 0) {
+                    $mime = $imageData['type'] ?? null;
+                    $ext = 'png';
+                    if ($mime === 'image/jpeg' || $mime === 'image/jpg') {
+                        $ext = 'jpg';
+                    } elseif ($mime === 'image/png') {
+                        $ext = 'png';
+                    }
+
+                    $filename = 'post-images/' . Str::uuid() . '.' . $ext;
+                    Storage::disk('public')->put($filename, $decoded);
+                    $validatedData['image'] = $filename;
+                }
+            } elseif (empty($imageData)) {
+                // Jika input 'image' ada tapi kosong (user menghapus file di UI)
+                if ($post->image) {
+                    Storage::disk('public')->delete($post->image);
+                }
+                $validatedData['image'] = null;
             }
-
-            // Jika $imageData null (tidak ada input 'image' baru), 
-            // kita tidak melakukan apa-apa, gambar lama tetap dipakai.
-
         }
-
-        // 4. (Opsional) Cek jika title berubah, buat ulang slug
-        if ($request->title !== $post->title) {
-            $validatedData['slug'] = Str::slug($request->title, '-');
-        }
-
-        // 5. Buat ulang excerpt
-        $validatedData['excerpt'] = Str::limit(strip_tags($request->body), 150, '...');
 
         // 6. Update data di database
         $post->update($validatedData);

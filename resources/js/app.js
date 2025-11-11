@@ -6,31 +6,33 @@ import * as FilePond from "filepond";
 
 // --- IMPORT PLUGIN BARU ---
 import FilePondPluginFileEncode from 'filepond-plugin-file-encode';
-
-// ... (Plugin lain yang sudah ada)
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
-// ...
+import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
+import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
+import FilePondPluginImageEdit from 'filepond-plugin-image-edit';
 
-// Cek apakah ada input file
-const inputElement = document.querySelector(
+// Register plugins BEFORE creating any FilePond instances
+FilePond.registerPlugin(
+    FilePondPluginFileEncode,
+    FilePondPluginImagePreview,
+    FilePondPluginImageExifOrientation,
+    FilePondPluginFileValidateSize,
+    FilePondPluginImageEdit
+);
+
+// Initialize FilePond for all matching file inputs (image/avatar)
+const inputElements = document.querySelectorAll(
     'input[type="file"][name="image"], input[type="file"][name="avatar"]'
 );
 
-if (inputElement) {
-    FilePond.create(inputElement, {
-        // ... (Opsi styling Anda)
+if (inputElements.length) {
+    inputElements.forEach((inputElement) => {
+        FilePond.create(inputElement, {
+            allowMultiple: false,
+            acceptedFileTypes: ['image/*'],
+            // You can add other options here (e.g. maxFileSize, labelIdle, etc.)
+        });
     });
-
-    FilePond.registerPlugin(
-        // --- DAFTARKAN PLUGIN BARU DI SINI ---
-        FilePondPluginFileEncode,
-        
-        // ... (Plugin lain yang sudah ada)
-        FilePondPluginImagePreview,
-        FilePondPluginImageExifOrientation,
-        FilePondPluginFileValidateSize,
-        FilePondPluginImageEdit
-    );
 }
 
 const editorElement = document.getElementById('editor');
@@ -58,6 +60,58 @@ if (editorElement) {
     }
 }
 
+// Dark Mode Toggle (works with button toggle)
+document.addEventListener('DOMContentLoaded', function() {
+    const html = document.documentElement;
+    const darkToggle = document.getElementById('dark-toggle');
+    const lightIcon = document.getElementById('light-icon');
+    const darkIcon = document.getElementById('dark-icon');
+
+    const updateIcons = (isDark) => {
+        if (lightIcon && darkIcon) {
+            if (isDark) {
+                lightIcon.classList.remove('hidden');
+                darkIcon.classList.add('hidden');
+            } else {
+                lightIcon.classList.add('hidden');
+                darkIcon.classList.remove('hidden');
+            }
+        }
+    };
+
+    // Initialize theme from localStorage or system preference
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        html.classList.add('dark');
+        updateIcons(true);
+        if (darkToggle) {
+            darkToggle.setAttribute('aria-pressed', 'true');
+            darkToggle.setAttribute('aria-label', 'Switch to light mode');
+        }
+    } else {
+        html.classList.remove('dark');
+        updateIcons(false);
+        if (darkToggle) {
+            darkToggle.setAttribute('aria-pressed', 'false');
+            darkToggle.setAttribute('aria-label', 'Switch to dark mode');
+        }
+    }
+
+    // Toggle dark mode on button click
+    if (darkToggle) {
+        darkToggle.addEventListener('click', function() {
+            const isDark = html.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateIcons(isDark);
+            if (darkToggle) {
+                darkToggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+                darkToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+            }
+        });
+    }
+});
 
 window.Alpine = Alpine;
 Alpine.start();
