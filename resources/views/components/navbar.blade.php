@@ -16,6 +16,35 @@
                 </svg>
                 <span class="sr-only">Search</span>
             </button>
+            <div class="flex items-center space-x-4">
+                @guest
+                    <x-nav-link href="{{ route('login') }}" :active="request()->is('login')">
+                        Login
+                    </x-nav-link>
+                    <x-nav-link href="{{ route('register') }}" :active="request()->is('register')">
+                        Register
+                    </x-nav-link>
+                @endguest
+
+                @auth
+                    <span class="text-gray-300 text-sm">
+                        Welcome, {{ auth()->user()->name }}
+                    </span>
+
+                    <x-nav-link href="{{ route('dashboard') }}" :active="request()->is('dashboard')">
+                        Dashboard
+                    </x-nav-link>
+
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <x-nav-link href="{{ route('logout') }}"
+                            onclick="event.preventDefault();
+                                                   this.closest('form').submit();">
+                            Logout
+                        </x-nav-link>
+                    </form>
+                @endauth
+            </div>
             <div class="relative hidden lg:block">
                 <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                     <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
