@@ -28,7 +28,18 @@
                     <x-slot name="trigger">
                         <button
                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
+                            
+                            @if (Auth::user()->avatar)
+                                <img class="h-8 w-8 rounded-full object-cover"
+                                    src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}">
+                            @else
+                                <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-gray-500">
+                                    <span
+                                        class="text-xs font-medium leading-none text-white">{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}</span>
+                                </span>
+                            @endif
+
+                            
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
@@ -85,7 +96,7 @@
 
             <x-responsive-nav-link :href="route('dashboard.posts.index')" :active="request()->routeIs('dashboard.posts.*')">
                 {{ __('My Posts') }}
-            </x-responsive-nav-link>    
+            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->

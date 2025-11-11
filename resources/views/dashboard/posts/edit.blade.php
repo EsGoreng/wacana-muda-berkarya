@@ -1,0 +1,100 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Edit Post') }}
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+
+                    <script>
+                        function previewImage() {
+                            const image = document.querySelector('#image');
+                            const imgPreview = document.querySelector('.img-preview');
+
+                            imgPreview.style.display = 'block';
+
+                            const oFReader = new FileReader();
+                            oFReader.readAsDataURL(image.files[0]);
+
+                            oFReader.onload = function(oFREvent) {
+                                imgPreview.src = oFREvent.target.result;
+                            }
+                        }
+                    </script>
+
+                    <form method="POST" action="{{ route('dashboard.posts.update', $post) }}"
+                        enctype="multipart/form-data">
+                        @csrf
+                        @method('PATCH') <div class="mb-4">
+                            <label for="title" class="block mb-2 text-sm font-medium text-gray-900">Title</label>
+                            <input type="text" id="title" name="title" value="{{ old('title', $post->title) }}"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                required>
+                            @error('title')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="category_id"
+                                class="block mb-2 text-sm font-medium text-gray-900">Category</label>
+                            <select id="category_id" name="category_id"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}"
+                                        {{ old('category_id', $post->category_id) == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('category_id')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        
+                    <div class="mb-4">
+                        <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Post Image</label>
+
+                        @if ($post->image)
+                            <img src="{{ asset('storage/' . $post->image) }}"
+                                class="img-preview w-full max-w-sm h-auto object-cover rounded-lg mb-2 border">
+                        @else
+                            <img class="img-preview w-full max-w-sm h-auto object-cover rounded-lg mb-2 border"
+                                style="display: none;">
+                        @endif
+
+                        <input type="file" id="image" name="image"
+                            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
+                            onchange="previewImage()">
+                        @error('image')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+
+                        <div class="mb-4">
+                            <label for="body" class="block mb-2 text-sm font-medium text-gray-900">Body</label>
+                            <textarea id="body" name="body" rows="8"
+                                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                required>{{ old('body', $post->body) }}</textarea>
+                            @error('body')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <button type="submit"
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                            Update Post
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use App\Http\Requests\ProfileUpdateRequest;
 
 class ProfileController extends Controller
 {
@@ -26,17 +27,38 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        // 1. Ambil data user
+        $user = $request->user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // 2. Isi data yang divalidasi (dari ProfileUpdateRequest)
+        $user->fill($request->validated());
+
+        // 3. Reset verifikasi email jika email diubah
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        // 4. (LOGIKA BARU) Handle Avatar Upload
+        if ($request->file('avatar')) {
+            // Validasi manual (bisa juga ditaruh di ProfileUpdateRequest)
+            $request->validate([
+                'avatar' => 'image|file|max:2048',
+            ]);
+
+            // Hapus avatar lama jika ada
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            // Simpan avatar baru dan update path
+            $user->avatar = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        // 5. Simpan perubahan
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
-
     /**
      * Delete the user's account.
      */

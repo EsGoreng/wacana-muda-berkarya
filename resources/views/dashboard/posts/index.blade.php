@@ -69,10 +69,18 @@
                                         <td class="px-6 py-4 text-right">
                                             <a href="{{ route('dashboard.posts.show', $post) }}"
                                                 class="font-medium text-blue-600 hover:underline">View</a>
-                                            <a href="#"
+                                            <a href="{{ route('dashboard.posts.edit', $post) }}"
                                                 class="font-medium text-green-600 hover:underline ml-2">Edit</a>
-                                            <a href="#"
-                                                class="font-medium text-red-600 hover:underline ml-2">Delete</a>
+
+                                            <form method="POST" action="{{ route('dashboard.posts.destroy', $post) }}"
+                                                class="inline ml-2">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="font-medium text-red-600 hover:underline"
+                                                    onclick="return confirm('Are you sure you want to delete this post?')">
+                                                    Delete
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @empty

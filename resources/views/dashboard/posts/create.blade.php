@@ -9,24 +9,21 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    
-                    <form method="POST" action="{{ route('dashboard.posts.store') }}">
+
+                    <form method="POST" action="{{ route('dashboard.posts.store') }}" enctype="multipart/form-data">
                         @csrf
-                        
-                        <div class="mb-4">
-                            <label for="title" class="block mb-2 text-sm font-medium text-gray-900">Title</label>
-                            <input type="text" id="title" name="title" value="{{ old('title') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
-                            @error('title')
-                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+
+
 
                         <div class="mb-4">
-                            <label for="category_id" class="block mb-2 text-sm font-medium text-gray-900">Category</label>
-                            <select id="category_id" name="category_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                            <label for="category_id"
+                                class="block mb-2 text-sm font-medium text-gray-900">Category</label>
+                            <select id="category_id" name="category_id"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                                 <option selected disabled>Choose a category</option>
                                 @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                    <option value="{{ $category->id }}"
+                                        {{ old('category_id') == $category->id ? 'selected' : '' }}>
                                         {{ $category->name }}
                                     </option>
                                 @endforeach
@@ -37,15 +34,29 @@
                         </div>
 
                         <div class="mb-4">
+                            <label for="image" class="block mb-2 text-sm font-medium text-gray-900">Post
+                                Image</label>
+
+                            <input type="file" id="image" name="image">
+
+                            @error('image')
+                                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="mb-4">
                             <label for="body" class="block mb-2 text-sm font-medium text-gray-900">Body</label>
-                            <textarea id="body" name="body" rows="8" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" required>{{ old('body') }}</textarea>
+                            <textarea id="body" name="body" rows="8"
+                                class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                required>{{ old('body') }}</textarea>
                             @error('body')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
 
 
-                        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                        <button type="submit"
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">
                             Create Post
                         </button>
                     </form>

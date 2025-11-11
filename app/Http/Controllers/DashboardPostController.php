@@ -53,18 +53,22 @@ class DashboardPostController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'body' => 'required|string',
+            'image' => 'image|file|max:2048',
         ]);
 
         // --- TAHAP 2: PERSIAPAN DATA ---
+        if ($request->file('image')) {
+            // Simpan gambar ke 'post-images' di disk 'public'
+            // 'store' akan generate nama unik
+            $imagePath = $request->file('image')->store('post-images', 'public');
 
-        // Ambil ID user yang sedang login
+            // Simpan path-nya ke data yang akan divalidasi
+            $validatedData['image'] = $imagePath;
+        }
+
+        // --- TAHAP 3: PERSIAPAN DATA LAIN ---
         $validatedData['author_id'] = auth()->id();
-
-        // Buat Slug dari Judul
         $validatedData['slug'] = Str::slug($request->title, '-');
-
-        // Buat Excerpt/Cuplikan dari Body
-        // 'strip_tags' untuk membersihkan HTML, 'limit' untuk membatasi
         $validatedData['excerpt'] = Str::limit(strip_tags($request->body), 150, '...');
 
         // --- TAHAP 3: SIMPAN KE DATABASE ---
@@ -94,24 +98,87 @@ class DashboardPostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Post $post)
     {
-        //
+        // Otorisasi: Pastikan user hanya bisa mengedit post miliknya
+        if ($post->author_id !== auth()->id()) {
+            abort(403);
+        }
+
+        return view('dashboard.posts.edit', [
+            'post' => $post, // Kirim data post yang ingin diedit
+            'categories' => Category::all() // Kirim data kategori untuk dropdown
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Post $post)
     {
-        //
+        // 1. Otorisasi
+        if ($post->author_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // 2. Validasi
+        $rules = [
+            'title' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'body' => 'required|string',
+            'image' => 'image|file|max:2048', // Tambahkan validasi gambar
+        ];
+
+        $validatedData = $request->validate($rules);
+
+        // 3. Handle File Upload (Logika BARU)
+        if ($request->file('image')) {
+            // Cek apakah ada gambar lama
+            if ($post->image) {
+                // Hapus gambar lama dari storage
+                Storage::disk('public')->delete($post->image);
+            }
+
+            // Simpan gambar baru
+            $validatedData['image'] = $request->file('image')->store('post-images', 'public');
+        }
+
+        // 4. (Opsional) Cek jika title berubah, buat ulang slug
+        if ($request->title !== $post->title) {
+            $validatedData['slug'] = Str::slug($request->title, '-');
+        }
+
+        // 5. Buat ulang excerpt
+        $validatedData['excerpt'] = Str::limit(strip_tags($request->body), 150, '...');
+
+        // 6. Update data di database
+        $post->update($validatedData);
+
+        // 7. Redirect
+        return redirect()->route('dashboard.posts.index')
+            ->with('success', 'Post has been updated successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Post $post)
     {
-        //
+        // 1. Otorisasi
+        if ($post->author_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // 2. Hapus gambar (Logika BARU)
+        if ($post->image) {
+            Storage::disk('public')->delete($post->image);
+        }
+
+        // 3. Hapus post dari database
+        $post->delete();
+
+        // 4. Redirect dengan pesan sukses
+        return redirect()->route('dashboard.posts.index')
+            ->with('success', 'Post has been deleted successfully!');
     }
 }
