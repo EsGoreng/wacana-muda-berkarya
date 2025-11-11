@@ -81,17 +81,52 @@ class DashboardPostController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'body' => 'required|string',
-            'image' => 'image|file|max:2048',
+            'image' => 'nullable|string',
         ]);
 
         // --- TAHAP 2: PERSIAPAN DATA ---
-        if ($request->file('image')) {
-            // Simpan gambar ke 'post-images' di disk 'public'
-            // 'store' akan generate nama unik
-            $imagePath = $request->file('image')->store('post-images', 'public');
+        if ($request->input('image')) {
+            // Filepond mengirim string JSON, kita ambil data base64-nya
+            $imageData = json_decode($request->input('image'), true);
 
-            // Simpan path-nya ke data yang akan divalidasi
-            $validatedData['image'] = $imagePath;
+            // Cek jika datanya valid
+            if (!empty($imageData['data'])) {
+                $raw = $imageData['data'];
+
+                // Jika raw mengandung data URI prefix (data:<mime>;base64,xxxxx), ambil bagian setelah koma
+                if (strpos($raw, 'base64,') !== false) {
+                    $parts = explode('base64,', $raw, 2);
+                    $b64 = $parts[1] ?? '';
+                } else {
+                    // Bisa jadi plugin hanya mengirim base64 tanpa prefix
+                    $b64 = $raw;
+                }
+
+                $decoded = base64_decode($b64);
+
+                // Pastikan decode berhasil dan data tidak kosong sebelum menyimpan
+                if ($decoded !== false && strlen($decoded) > 0) {
+                    // Tentukan ekstensi dari tipe MIME jika tersedia
+                    $mime = $imageData['type'] ?? null;
+                    $ext = 'png';
+                    if ($mime === 'image/jpeg' || $mime === 'image/jpg') {
+                        $ext = 'jpg';
+                    } elseif ($mime === 'image/png') {
+                        $ext = 'png';
+                    }
+
+                    // Buat nama file unik
+                    $filename = 'post-images/' . Str::uuid() . '.' . $ext;
+
+                    // Simpan file ke storage
+                    Storage::disk('public')->put($filename, $decoded);
+
+                    // Simpan path ke database
+                    $validatedData['image'] = $filename;
+                }
+            }
+        } else {
+            $validatedData['image'] = null;
         }
 
         // --- TAHAP 3: PERSIAPAN DATA LAIN ---
@@ -144,13 +179,13 @@ class DashboardPostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        // 1. Otorisasi
+        // 1. Otorisasi (Sudah ada)
         if ($post->author_id !== auth()->id()) {
             abort(403);
         }
 
-        // 2. Validasi
-        $rules = [
+        // 2. Validasi (Diubah untuk FileEncode)
+        $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'body' => 'required|string',
@@ -186,25 +221,48 @@ class DashboardPostController extends Controller
 
         $validatedData = $request->validate($rules);
 
-        // 3. Handle File Upload (Logika BARU)
-        if ($request->file('image')) {
-            // Cek apakah ada gambar lama
-            if ($post->image) {
-                // Hapus gambar lama dari storage
-                Storage::disk('public')->delete($post->image);
+        // 3. Logika Update Gambar (Diubah untuk FileEncode)
+        if ($request->input('image')) {
+            // Ada gambar baru atau aksi pada input image
+            $imageData = json_decode($request->input('image'), true);
+
+            if (!empty($imageData['data'])) {
+                // Hapus gambar lama (jika ada)
+                if ($post->image) {
+                    Storage::disk('public')->delete($post->image);
+                }
+
+                $raw = $imageData['data'];
+                if (strpos($raw, 'base64,') !== false) {
+                    $parts = explode('base64,', $raw, 2);
+                    $b64 = $parts[1] ?? '';
+                } else {
+                    $b64 = $raw;
+                }
+
+                $decoded = base64_decode($b64);
+
+                if ($decoded !== false && strlen($decoded) > 0) {
+                    $mime = $imageData['type'] ?? null;
+                    $ext = 'png';
+                    if ($mime === 'image/jpeg' || $mime === 'image/jpg') {
+                        $ext = 'jpg';
+                    } elseif ($mime === 'image/png') {
+                        $ext = 'png';
+                    }
+
+                    $filename = 'post-images/' . Str::uuid() . '.' . $ext;
+                    Storage::disk('public')->put($filename, $decoded);
+                    $validatedData['image'] = $filename;
+                }
+            } elseif (empty($imageData)) {
+                // Jika input 'image' ada tapi kosong (user menghapus file di UI)
+                if ($post->image) {
+                    Storage::disk('public')->delete($post->image);
+                }
+                $validatedData['image'] = null;
             }
-
-            // Simpan gambar baru
-            $validatedData['image'] = $request->file('image')->store('post-images', 'public');
         }
-
-        // 4. (Opsional) Cek jika title berubah, buat ulang slug
-        if ($request->title !== $post->title) {
-            $validatedData['slug'] = Str::slug($request->title, '-');
-        }
-
-        // 5. Buat ulang excerpt
-        $validatedData['excerpt'] = Str::limit(strip_tags($request->body), 150, '...');
 
         // 6. Update data di database
         $post->update($validatedData);

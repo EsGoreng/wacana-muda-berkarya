@@ -1,3 +1,54 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .btn-primary {
+        @apply px-5 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:ring-4 focus:ring-primary-300 dark:focus:ring-primary-900 transition duration-300 ease-in-out;
+    }
+    .card {
+        @apply bg-white dark:bg-primary-800 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out;
+    }
+    .text-gradient {
+        @apply bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent;
+    }
+}
+
+/* Dark-mode overrides: translate common gray utilities to primary (blue) palette */
+@layer utilities {
+    .dark .bg-gray-600 { background-color: #0369a1 !important; }
+    .dark .bg-gray-700 { background-color: #075985 !important; }
+    .dark .bg-gray-800 { background-color: #075985 !important; }
+    .dark .bg-gray-900 { background-color: #0c3d66 !important; }
+
+    .dark .border-gray-600 { border-color: #0369a1 !important; }
+    .dark .border-gray-700 { border-color: #0369a1 !important; }
+    .dark .border-gray-500 { border-color: #0369a1 !important; }
+
+    .dark .text-gray-300 { color: #7dd3fc !important; }
+    .dark ::placeholder { color: #7dd3fc !important; }
+}
+
+@layer base {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    textarea,
+    select {
+        /* Use primary-based colors in dark mode for a blue theme */
+        @apply dark:bg-primary-900 dark:border-primary-700 dark:text-white dark:placeholder-primary-300;
+    }
+
+    ::-webkit-scrollbar {
+        @apply w-2;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-gray-100 dark:bg-primary-900;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-primary-600 dark:bg-primary-700 rounded-full hover:bg-primary-500;
+    }
+}

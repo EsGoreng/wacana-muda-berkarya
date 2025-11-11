@@ -17,6 +17,24 @@
                 <span class="sr-only">Search</span>
             </button>
             <div class="flex items-center space-x-4">
+                <!-- Dark Mode Toggle -->
+                <button id="dark-toggle" type="button" aria-pressed="false" aria-label="Toggle dark mode"
+                    class="p-2.5 text-gray-500 rounded-lg hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700">
+                    <!-- Sun Icon -->
+                    <svg id="light-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1h0zm4.293 1.707a1 1 0 011.414-1.414l.707.707a1 1 0 11-1.414 1.414l-.707-.707zm2.828 2.828a1 1 0 011.414-1.414l.707.707a1 1 0 11-1.414 1.414l-.707-.707zm1.414 2.828a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 111.414-1.414l.707.707zm-1.414 2.828a1 1 0 011.414 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707zm-2.828 1.414a1 1 0 11-1.414-1.414l.707-.707a1 1 0 111.414 1.414l-.707.707zM13 11a1 1 0 11-2 0 1 1 0 012 0zm-6 0a1 1 0 11-2 0 1 1 0 012 0zm-4.293-1.707a1 1 0 011.414 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707zm3.414 3.414a1 1 0 011.414-1.414l.707.707a1 1 0 11-1.414 1.414l-.707-.707zM3 11a1 1 0 110-2 1 1 0 010 2z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <!-- Moon Icon -->
+                    <svg id="dark-icon" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                    <span class="sr-only">Toggle dark mode</span>
+                </button>
+                
                 @guest
                     <x-nav-link href="{{ route('login') }}" :active="request()->is('login')">
                         Login
@@ -27,7 +45,7 @@
                 @endguest
 
                 @auth
-                    <span class="text-gray-300 text-sm">
+                    <span class="text-gray-900 dark:text-gray-100 text-sm">
                         Welcome, {{ auth()->user()->name }}
                     </span>
 
@@ -55,7 +73,7 @@
                     <span class="sr-only">Search icon</span>
                 </div>
                 <input type="text" id="search-navbar"
-                    class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-primary-900 dark:border-primary-700 dark:placeholder-primary-300 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                     placeholder="Search...">
             </div>
             <button data-collapse-toggle="navbar-search" type="button"
@@ -79,7 +97,7 @@
                     </svg>
                 </div>
                 <input type="text" id="search-navbar"
-                    class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    class="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-primary-900 dark:border-primary-700 dark:placeholder-primary-300 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                     placeholder="Search...">
             </div>
             <ul
@@ -88,6 +106,11 @@
                 <x-nav-link href="/posts" :active="request()->is('posts')">Forum</x-nav-link>
                 <x-nav-link href="/about" :active="request()->is('about')">About</x-nav-link>
                 <x-nav-link href="/contact" :active="request()->is('contact')">Contact</x-nav-link>
+                @auth
+                    <x-nav-link href="{{ route('dashboard.posts.index') }}" :active="request()->routeIs('dashboard.posts.*')">
+                        My Posts
+                    </x-nav-link>
+                @endauth
             </ul>
         </div>
     </div>

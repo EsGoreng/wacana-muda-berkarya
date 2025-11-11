@@ -12,7 +12,7 @@
     <title>{{ $title }}</title>
 </head>
 
-<body class="h-full bg-white dark:bg-primary-900">
+<body class="h-full bg-white dark:bg-primary-900 transition-colors duration-300">
     <div class="min-h-full">
 
         <x-navbar>{{ $title }}</x-navbar>
