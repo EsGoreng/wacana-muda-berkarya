@@ -54,17 +54,34 @@ class DashboardPostController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'body' => 'required|string',
-            'image' => 'image|file|max:2048',
+            'image' => 'nullable|string',
         ]);
 
         // --- TAHAP 2: PERSIAPAN DATA ---
-        if ($request->file('image')) {
-            // Simpan gambar ke 'post-images' di disk 'public'
-            // 'store' akan generate nama unik
-            $imagePath = $request->file('image')->store('post-images', 'public');
+        if ($request->input('image')) {
+            // Filepond mengirim string JSON, kita ambil data base64-nya
+            $imageData = json_decode($request->input('image'), true);
 
-            // Simpan path-nya ke data yang akan divalidasi
-            $validatedData['image'] = $imagePath;
+            // Cek jika datanya valid
+            if (isset($imageData['data'])) {
+                $data = $imageData['data'];
+
+                // Pisahkan data base64
+                @list($type, $data) = explode(';', $data);
+                @list(, $data)      = explode(',', $data);
+                $data = base64_decode($data);
+
+                // Buat nama file unik
+                $filename = 'post-images/' . Str::uuid() . '.' . ($imageData['type'] == 'image/jpeg' ? 'jpg' : 'png');
+
+                // Simpan file ke storage
+                Storage::disk('public')->put($filename, $data);
+
+                // Simpan path ke database
+                $validatedData['image'] = $filename;
+            }
+        } else {
+            $validatedData['image'] = null;
         }
 
         // --- TAHAP 3: PERSIAPAN DATA LAIN ---
@@ -117,31 +134,61 @@ class DashboardPostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        // 1. Otorisasi
+        // 1. Otorisasi (Sudah ada)
         if ($post->author_id !== auth()->id()) {
             abort(403);
         }
 
-        // 2. Validasi
-        $rules = [
+        // 2. Validasi (Diubah untuk FileEncode)
+        $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'body' => 'required|string',
-            'image' => 'image|file|max:2048', // Tambahkan validasi gambar
-        ];
+            'image' => 'nullable|string', // <- Diubah dari 'image|file'
+        ]);
 
-        $validatedData = $request->validate($rules);
+        // 3. Logika Update Gambar (Diubah untuk FileEncode)
+        if ($request->input('image')) {
+            // Ada gambar baru (Base64) yang di-upload
 
-        // 3. Handle File Upload (Logika BARU)
-        if ($request->file('image')) {
-            // Cek apakah ada gambar lama
-            if ($post->image) {
-                // Hapus gambar lama dari storage
-                Storage::disk('public')->delete($post->image);
+            // Cek data JSON dari Filepond
+            $imageData = json_decode($request->input('image'), true);
+
+            if (isset($imageData['data'])) {
+                // 1. Hapus gambar lama (jika ada)
+                if ($post->image) {
+                    Storage::disk('public')->delete($post->image);
+                }
+
+                // 2. Dekode data Base64
+                $data = $imageData['data'];
+                @list($type, $data) = explode(';', $data);
+                @list(, $data)      = explode(',', $data);
+                $data = base64_decode($data);
+
+                // 3. Buat nama file unik
+                $ext = ($imageData['type'] == 'image/jpeg' ? 'jpg' : 'png');
+                $filename = 'post-images/' . Str::uuid() . '.' . $ext;
+
+                // 4. Simpan file baru
+                Storage::disk('public')->put($filename, $data);
+
+                // 5. Set path baru untuk divalidasi
+                $validatedData['image'] = $filename;
+            } else if (empty($imageData)) {
+                // Jika input 'image' ada tapi datanya kosong 
+                // (misal: user menghapus gambar di Filepond)
+
+                // Hapus gambar lama (jika ada)
+                if ($post->image) {
+                    Storage::disk('public')->delete($post->image);
+                }
+                $validatedData['image'] = null; // Set jadi null
             }
 
-            // Simpan gambar baru
-            $validatedData['image'] = $request->file('image')->store('post-images', 'public');
+            // Jika $imageData null (tidak ada input 'image' baru), 
+            // kita tidak melakukan apa-apa, gambar lama tetap dipakai.
+
         }
 
         // 4. (Opsional) Cek jika title berubah, buat ulang slug
