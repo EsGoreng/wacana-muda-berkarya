@@ -8,8 +8,13 @@ Route::get('/', function () {
     return view('home')->with('title', 'Home');
 });
 
+Route::get('/posts', function () {
+    return view('posts')->with('title', 'Forum');
+});
+
+
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return view('dashboard')->with('title', 'Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
