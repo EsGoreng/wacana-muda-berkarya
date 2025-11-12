@@ -1,9 +1,5 @@
 <x-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit Post') }}
-        </h2>
-    </x-slot>
+    <x-slot:title>{{ $title }}</x-slot:title>   
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -25,6 +21,11 @@
                             }
                         }
                     </script>
+
+                    <a href="{{ route('dashboard.posts.index') }}"
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-4 inline-block">
+                        &laquo; Back to My Posts
+                    </a>
 
                     <form method="POST" action="{{ route('dashboard.posts.update', $post) }}"
                         enctype="multipart/form-data">
@@ -64,6 +65,13 @@
                             @if ($post->image)
                                 <img src="{{ asset('storage/' . $post->image) }}"
                                     class="img-preview w-full max-w-sm h-auto object-cover rounded-lg mb-2 border">
+
+                                <div class="flex items-center mb-2">
+                                    <input id="delete_image" name="delete_image" type="checkbox" value="1" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="delete_image" class="ml-2 text-sm font-medium text-red-600 dark:text-red-500">
+                                        Hapus gambar ini saat update
+                                    </label>
+                                </div>
                             @else
                                 <img class="img-preview w-full max-w-sm h-auto object-cover rounded-lg mb-2 border"
                                     style="display: none;">

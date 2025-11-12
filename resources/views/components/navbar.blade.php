@@ -1,4 +1,4 @@
-<nav class="bg-white border-gray-200 dark:bg-primary-500 sticky top-0 z-[60]">
+<nav class="bg-white border-gray-200 dark:bg-primary-800 sticky top-0 z-[60]">
     <div class="max-w-screen-xl mx-auto flex items-center justify-between p-4">
 
         <div class="flex-shrink-0">
@@ -13,9 +13,9 @@
         <div class="hidden lg:flex justify-center flex-1">
             <ul class="flex space-x-8 font-medium">
                 <x-nav-link href="/" :active="request()->is('/')">Home</x-nav-link>
-                <x-nav-link href="/posts" :active="request()->is('posts')">Forum</x-nav-link>
-                <x-nav-link href="/about" :active="request()->is('about')">About</x-nav-link>
-                <x-nav-link href="/contact" :active="request()->is('contact')">Contact</x-nav-link>
+                <x-nav-link href="/posts" :active="request()->is('posts')">Blog</x-nav-link>
+                <x-nav-link href="/about" :active="request()->is('about')">Thread</x-nav-link>
+                <x-nav-link href="/about" :active="request()->is('about')">Event</x-nav-link>
             </ul>
         </div>
 

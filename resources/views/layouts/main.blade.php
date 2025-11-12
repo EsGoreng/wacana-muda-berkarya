@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    @vite('resources/css/app.css')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
     <link rel="icon" href="{{ 'images/logo.png' }}">
@@ -37,7 +37,7 @@
 
 
     <aside id="mobile-menu-drawer"
-        class="fixed top-0 left-0 z-50 w-64 h-screen pt-20 p-4 overflow-y-auto transition-transform -translate-x-full bg-gray-50 dark:bg-gray-800"
+        class="fixed top-0 left-0 z-50 w-64 h-screen pt-20 p-4 overflow-y-auto transition-transform -translate-x-full bg-gray-50 dark:bg-primary-800"
         tabindex="-1" aria-labelledby="mobile-menu-drawer-label">
 
         <h5 id="mobile-menu-drawer-label" class="text-base font-semibold text-gray-500 uppercase dark:text-gray-400">
@@ -46,9 +46,9 @@
         <div class="py-4 overflow-y-auto">
             <ul class="space-y-2 font-medium">
                 <li><x-nav-link href="/" :active="request()->is('/')">Home</x-nav-link></li>
-                <li><x-nav-link href="/posts" :active="request()->is('posts')">Forum</x-nav-link></li>
-                <li><x-nav-link href="/about" :active="request()->is('about')">About</x-nav-link></li>
-                <li><x-nav-link href="/contact" :active="request()->is('contact')">Contact</x-nav-link></li>
+                <li><x-nav-link href="/posts" :active="request()->is('posts')">Blog</x-nav-link></li>
+                <li><x-nav-link href="/about" :active="request()->is('about')">Thread</x-nav-link></li>
+                <li><x-nav-link href="/about" :active="request()->is('about')">Event</x-nav-link></li>
                 <hr class="my-2 border-gray-200 dark:border-gray-600">
                 @auth
                     <li><x-nav-link href="{{ route('dashboard') }}" :active="request()->is('dashboard')">Dashboard</x-nav-link></li>

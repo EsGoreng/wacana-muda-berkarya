@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 :root {
-  --color-primary-500: oklch(0.2701 0.1121 265.31);
+  --color-primary-500: oklch(34.808% 0.06519 268.897);
   --font-body: Inter, system-ui, sans-serif;
 }
 

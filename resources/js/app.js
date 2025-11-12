@@ -68,7 +68,7 @@ if (editorElement) {
                 ['bold', 'italic', 'underline', 'strike'],
                 [{ list: 'ordered' }, { list: 'bullet' }],
                 ['blockquote', 'code-block'],
-                ['link', 'image'],
+                ['link'],
                 ['clean']
             ]
         }

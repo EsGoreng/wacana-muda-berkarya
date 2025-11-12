@@ -29,7 +29,8 @@ class DashboardPostController extends Controller
 
         // Kirim data ke view
         return view('dashboard.posts.index', [
-            'posts' => $posts
+            'posts' => $posts,
+            'title' => 'Dashboard',
         ]);
     }
 
@@ -40,7 +41,8 @@ class DashboardPostController extends Controller
     {
         //
         return view('dashboard.posts.create', [
-            'categories' => Category::all()
+            'categories' => Category::all(),
+            'title' => 'Create New Post'
         ]);
     }
 
@@ -119,7 +121,8 @@ class DashboardPostController extends Controller
         }
 
         return view('dashboard.posts.show', [
-            'post' => $post
+            'post' => $post,
+            'title' => $post->title,
         ]);
     }
 
@@ -135,7 +138,8 @@ class DashboardPostController extends Controller
 
         return view('dashboard.posts.edit', [
             'post' => $post, // Kirim data post yang ingin diedit
-            'categories' => Category::all() // Kirim data kategori untuk dropdown
+            'categories' => Category::all(),
+            'title' => 'Edit ' . $post->title, // Kirim data kategori untuk dropdown
         ]);
     }
 
@@ -154,27 +158,16 @@ class DashboardPostController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'body' => 'required|string',
-            'image' => 'image|file|max:2048', // Tambahkan validasi gambar
+            'image' => 'image|file|max:2048', // Validasi gambar
         ];
 
-        // Debug logging: help determine whether an UploadedFile is received for 'image' on update
+        // Debug logging (Boleh dihapus jika sudah tidak diperlukan)
         $file = $request->file('image');
         $fileName = null;
         $fileType = null;
         if ($file) {
-            if (is_array($file)) {
-                $names = [];
-                $types = [];
-                foreach ($file as $f) {
-                    $names[] = $f->getClientOriginalName();
-                    $types[] = $f->getClientMimeType();
-                }
-                $fileName = implode(',', $names);
-                $fileType = implode(',', $types);
-            } else {
-                $fileName = $file->getClientOriginalName();
-                $fileType = $file->getClientMimeType();
-            }
+            $fileName = $file->getClientOriginalName();
+            $fileType = $file->getClientMimeType();
         }
 
         logger()->info('Image debug update', [
@@ -186,17 +179,34 @@ class DashboardPostController extends Controller
 
         $validatedData = $request->validate($rules);
 
-        // 3. Handle File Upload (Logika BARU)
-        if ($request->file('image')) {
-            // Cek apakah ada gambar lama
+        // --- TAHAP 3: LOGIKA BARU UNTUK GAMBAR ---
+
+        // Cek apakah user mencentang 'Hapus Gambar'
+        if ($request->has('delete_image')) {
+
+            // 1. Hapus gambar lama dari storage jika ada
             if ($post->image) {
-                // Hapus gambar lama dari storage
                 Storage::disk('public')->delete($post->image);
             }
 
-            // Simpan gambar baru
+            // 2. Set 'image' di database menjadi null
+            $validatedData['image'] = null;
+        }
+        // Jika tidak hapus, cek apakah user upload gambar BARU
+        elseif ($request->file('image')) {
+
+            // 1. Hapus gambar lama (jika ada) untuk diganti
+            if ($post->image) {
+                Storage::disk('public')->delete($post->image);
+            }
+
+            // 2. Simpan gambar baru dan dapatkan path-nya
             $validatedData['image'] = $request->file('image')->store('post-images', 'public');
         }
+        // Jika tidak ada aksi (tidak hapus, tidak upload baru),
+        // kita tidak memasukkan 'image' ke $validatedData,
+        // sehingga database tidak akan di-update (gambar lama tetap ada).
+
 
         // 4. (Opsional) Cek jika title berubah, buat ulang slug
         if ($request->title !== $post->title) {

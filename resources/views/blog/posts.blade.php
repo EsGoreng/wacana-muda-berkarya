@@ -120,7 +120,7 @@
 
             @forelse ($posts as $post)
                 <article
-                    class="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                    class="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-primary-800 dark:border-gray-700">
                     <div class="flex justify-between items-center mb-5 text-gray-500">
                         <a href="/posts?category={{ $post->category->slug }}">
                             <span

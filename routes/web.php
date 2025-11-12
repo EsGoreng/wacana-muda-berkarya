@@ -1,20 +1,33 @@
 <?php
 
-use App\Http\Controllers\DashboardPostController;
-use App\Http\Controllers\ProfileController;
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Redirect;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardPostController;
+
 
 Route::get('/', function () {
-    return view('home')->with('title', 'Home');
+    return view('home')->with('title', 'Wacana Muda Berkarya');
 });
 
 Route::get('/posts', function () {
-    return view('posts')->with('title', 'Forum');
+    return view('blog/posts', [
+        'title' => 'Blog',
+        'posts' => Post::latest()->paginate(9)
+    ]);
 });
 
+Route::get('/posts/{post:slug}', function (Post $post) {
+    return view('blog/post', [
+        'title' => $post->title,
+        'post' => $post
+    ]);
+});
 
 Route::get('/dashboard', function () {
-    return view('dashboard')->with('title', 'Dashboard');
+    return Redirect::route('dashboard.posts.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {

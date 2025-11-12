@@ -1,6 +1,6 @@
 <div class=" mx-auto px-4 py-6 sm:px-6 lg:px-8 relative bg-white shadow-sm dark:bg-primary-600"></div>
 
-<footer class="p-4 bg-white sm:p-6 dark:bg-primary-500">
+<footer class="p-4 bg-white sm:p-6 dark:bg-primary-800">
     <div class="mx-auto max-w-screen-xl">
         <div class="md:flex md:justify-between">
             <div class="mb-6 md:mb-0">

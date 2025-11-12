@@ -369,7 +369,7 @@
             </div>
             <div class="grid gap-8 mb-6 lg:mb-16 md:grid-cols-2">
                 <div
-                    class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-primary-500 dark:border-gray-700">
+                    class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-primary-800 dark:border-gray-700">
                     <a href="#">
                         <img class="w-full h-auto object-cover rounded-t-lg sm:rounded-none sm:rounded-l-lg sm:w-56 sm:h-56"
                             src="{{ asset('images/landingpage/pikri.jpg') }}"
@@ -423,7 +423,7 @@
                 </div>
 
                 <div
-                    class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-primary-500 dark:border-gray-700">
+                    class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-primary-800 dark:border-gray-700">
                     <a href="#">
                         <img class="w-full h-auto object-cover rounded-t-lg sm:rounded-none sm:rounded-l-lg sm:w-56 sm:h-56"
                             src="{{ asset('images/landingpage/babeh.jpg') }}"
@@ -477,7 +477,7 @@
                 </div>
 
                 <div
-                    class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-primary-500 dark:border-gray-700">
+                    class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-primary-800 dark:border-gray-700">
                     <a href="#">
                         <img class="w-full h-auto object-cover rounded-t-lg sm:rounded-none sm:rounded-l-lg sm:w-56 sm:h-56"
                             src="{{ asset('images/landingpage/heryo.jpg') }}"
@@ -531,7 +531,7 @@
                 </div>
 
                 <div
-                    class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-primary-500 dark:border-gray-700">
+                    class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-primary-800 dark:border-gray-700">
                     <a href="#">
                         <img class="w-full h-auto object-cover rounded-t-lg sm:rounded-none sm:rounded-l-lg sm:w-56 sm:h-56"
                             src="{{ asset('images/landingpage/denan.jpg') }}"
