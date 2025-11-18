@@ -4,8 +4,6 @@
 
 @section('content')
 
-<x-slot:title>{{ $title }}</x-slot:title>
-
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -19,7 +17,7 @@
 
                 <div class="mb-4">
                     <a href="{{ route('dashboard.posts.create') }}"
-                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-0.5 inline-block">
                         Create New Post
                     </a>
                 </div>

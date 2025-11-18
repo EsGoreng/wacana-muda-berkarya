@@ -4,8 +4,6 @@
 
 @section('content')
 
-{{-- <x-slot:title>{{ $title }}</x-slot> --}}
-
 <main class="pt-8 pb-16 lg:pt-16 lg:pb-24">
     <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
         <article

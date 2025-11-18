@@ -18,9 +18,6 @@ class DashboardPostController extends Controller
     {
         $userId = Auth::id();
 
-        // Ambil postingan HANYA milik user tersebut,
-        // Gunakan filter scope dari Model Post
-        // Terapkan paginasi
         $posts = Post::where('author_id', $userId)
             ->filter(request(['search'])) // Menerapkan search (Sesuai roadmap)
             ->latest()
@@ -28,7 +25,7 @@ class DashboardPostController extends Controller
             ->withQueryString();
 
         // Kirim data ke view
-        return view('dashboard.posts.index', [
+        return view('dashboard.index', [
             'posts' => $posts,
             'title' => 'Dashboard',
         ]);
@@ -40,7 +37,7 @@ class DashboardPostController extends Controller
     public function create()
     {
         //
-        return view('dashboard.posts.create', [
+        return view('dashboard.blogs.create', [
             'categories' => Category::all(),
             'title' => 'Create New Post'
         ]);
@@ -51,8 +48,6 @@ class DashboardPostController extends Controller
      */
     public function store(Request $request)
     {
-        // --- TAHAP 1: VALIDASI (Sesuai Roadmap) ---
-        // Debug logging: help determine whether an UploadedFile is received for 'image'
         $file = $request->file('image');
         $fileName = null;
         $fileType = null;
@@ -86,25 +81,17 @@ class DashboardPostController extends Controller
             'image' => 'image|file|max:2048',
         ]);
 
-        // --- TAHAP 2: PERSIAPAN DATA ---
         if ($request->file('image')) {
-            // Simpan gambar ke 'post-images' di disk 'public'
-            // 'store' akan generate nama unik
             $imagePath = $request->file('image')->store('post-images', 'public');
-
-            // Simpan path-nya ke data yang akan divalidasi
             $validatedData['image'] = $imagePath;
         }
 
-        // --- TAHAP 3: PERSIAPAN DATA LAIN ---
         $validatedData['author_id'] = auth()->id();
         $validatedData['slug'] = Str::slug($request->title, '-');
         $validatedData['excerpt'] = Str::limit(strip_tags($request->body), 150, '...');
 
-        // --- TAHAP 3: SIMPAN KE DATABASE ---
         Post::create($validatedData); //
 
-        // --- TAHAP 4: REDIRECT ---
         return redirect()->route('dashboard.posts.index')
             ->with('success', 'New post has been created successfully!');
     }
@@ -120,7 +107,7 @@ class DashboardPostController extends Controller
             abort(403); // Unauthorized action
         }
 
-        return view('dashboard.posts.show', [
+        return view('dashboard.blogs.show', [
             'post' => $post,
             'title' => $post->title,
         ]);
@@ -136,7 +123,7 @@ class DashboardPostController extends Controller
             abort(403);
         }
 
-        return view('dashboard.posts.edit', [
+        return view('dashboard.blogs.edit', [
             'post' => $post, // Kirim data post yang ingin diedit
             'categories' => Category::all(),
             'title' => 'Edit ' . $post->title, // Kirim data kategori untuk dropdown
