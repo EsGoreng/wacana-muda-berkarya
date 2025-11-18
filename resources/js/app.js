@@ -1,6 +1,6 @@
 // resources/js/app.js
 import "./bootstrap";
-import "flowbite";
+import "flowbite";  
 import Alpine from "alpinejs";
 import Quill from "quill";
 import * as FilePond from "filepond";

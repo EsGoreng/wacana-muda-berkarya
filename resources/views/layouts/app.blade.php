@@ -1,39 +1,29 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    @vite('resources/css/app.css')
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
+    <link rel="icon" href="{{ 'images/logo.png' }}">
+    <title>@yield('title', 'Wacana Muda Berkarya')</title>
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+<body class="h-full bg-white dark:bg-primary-900">
+    <div class="min-h-full">
 
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <x-navbar></x-navbar> 
+        <x-header :hidden="request()->is('/', 'blog/*')">@yield('title')</x-header>
 
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-
-<body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-        @include('layouts.navigation')
-
-        <!-- Page Heading -->
-        @isset($header)
-            <header class="bg-white dark:bg-primary-800 shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    {{ $header }}
-                </div>
-            </header>
-        @endisset
-
-        <!-- Page Content -->
         <main>
-            {{ $slot }}
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 bg-white dark:bg-primary-900">
+                @yield('content')
+            </div>
         </main>
+
+        <x-footer></x-footer>
     </div>
 </body>
-
 </html>

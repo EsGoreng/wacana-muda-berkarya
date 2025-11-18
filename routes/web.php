@@ -2,6 +2,7 @@
 
 use App\Models\Post;
 use App\Models\User;
+use App\Models\Category;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\ProfileController;
@@ -12,14 +13,25 @@ Route::get('/', function () {
     return view('home')->with('title', 'Wacana Muda Berkarya');
 });
 
-Route::get('/posts', function () {
-    return view('blog/posts', [
-        'title' => 'Blog',
-        'posts' => Post::latest()->paginate(9)
-    ]);
+Route::get('/blogs', function () {
+    $posts = Post::filter(request(['search', 'category', 'author']))
+                ->latest()
+                ->paginate(perPage: 12)
+                ->withQueryString();
+
+    $title = 'Blog Page';
+    if (request('category') && $category = Category::firstWhere('slug', request('category'))) {
+        $title = 'Article in ' . $category->name;
+    } elseif (request('author') && $author = User::firstWhere('username', request('author'))) {
+        $title = count($posts) . ' Article by ' . $author->name;
+    } elseif (request('search')) {
+        $title = 'Results for "' . request('search') . '"';
+    }
+
+    return view('blog/posts', ['title' => $title, 'posts' => $posts]);
 });
 
-Route::get('/posts/{post:slug}', function (Post $post) {
+Route::get('/blog/{post:slug}', function (Post $post) {
     return view('blog/post', [
         'title' => $post->title,
         'post' => $post

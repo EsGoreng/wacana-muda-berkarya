@@ -1,94 +1,54 @@
-<x-layout>
-    <x-slot:title>{{ $title }}</x-slot>
+@extends('layouts.app')
 
+@section('title', $title)
 
-    <main class="pt-8 pb-16 lg:pt-16 lg:pb-24">
-        <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
-            <article
-                class="mx-auto w-full max-w-4xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
-                <header class="mb-4 lg:mb-6 not-format">
+@section('content')
 
-                    <nav class="flex" aria-label="Breadcrumb">
-                        <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                            <li class="inline-flex items-center">
-                                <a href="/posts"
-                                    class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-                                    <svg class="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                        fill="currentColor" viewBox="0 0 20 20">
-                                        <path
-                                            d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z" />
-                                    </svg>
-                                    Posts
-                                </a>
-                            </li>
-                            <li>
-                                <div class="flex items-center">
-                                    <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" d="m1 9 4-4-4-4" />
-                                    </svg>
-                                    <a href="/posts?author={{ $post->author->username }}"
-                                        class="truncate ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">{{ $post->author->name }}</a>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="flex items-center">
-                                    <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" d="m1 9 4-4-4-4" />
-                                    </svg>
-                                    <a href="/posts?category={{ $post->category->slug }}"
-                                        class="truncate ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">{{ $post->category->name }}</a>
-                                </div>
-                            </li>
-                            
-                            <li aria-current="page">
-                                <div class="flex items-center">
-                                    <svg class="rtl:rotate-180 w-3 h-3 text-gray-400 mx-1" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" d="m1 9 4-4-4-4" />
-                                    </svg>
-                                    <span
-                                        class="truncate ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400">{{ $post->title }}</span>
-                                </div>
-                            </li>
-                        </ol>
-                    </nav>
+{{-- <x-slot:title>{{ $title }}</x-slot> --}}
 
+<main class="pt-8 pb-16 lg:pt-16 lg:pb-24">
+    <div class="flex justify-between px-4 mx-auto max-w-screen-xl ">
+        <article
+            class="mx-auto w-full max-w-4xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert">
+            <header class="mb-4 lg:mb-6 not-format">
 
-                    <address class="flex items-center my-6 not-italic">
-                        <div class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
-                            <img class="mr-4 w-16 h-16 rounded-full"
-                                src="https://flowbite.com/docs/images/people/profile-picture-2.jpg"
-                                alt="{{ $post->author->name }}">
-                            <div>
-                                <a href="/posts?author={{ $post->author->username }}" rel="author"
-                                    class="text-xl font-bold text-gray-900 dark:text-white">{{ $post->author->name }}</a>
+                <a href="javascript:history.back()"
+                    class="inline-flex items-center text-m font-medium text-gray-900 dark:text-white hover:underline">
+                    <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back
+                </a>
 
+                <address class="flex items-center my-6 not-italic">
+                    <div class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white">
+                        <img class="mr-4 w-16 h-16 rounded-full"
+                            src="https://flowbite.com/docs/images/people/profile-picture-2.jpg"
+                            alt="{{ $post->author->name }}">
+                        <div>
+                            <a href="/blogs?author={{ $post->author->username }}" rel="author"
+                                class="text-xl font-bold text-gray-900 dark:text-white">{{ $post->author->name }}</a>
+                            <p class="text-base text-gray-500 dark:text-gray-400 mb-2">
+                                {{ $post->created_at->diffForHumans() }}</p>
+                            <a href="/blogs?category={{ $post->category->slug }}">
+                                <span
+                                    class="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-{{ $post->category->color }}-100 dark:text-primary-800">
+                                    {{ $post->category->name }}
+                                </span>
+                            </a>
 
-
-                                <p class="text-base text-gray-500 dark:text-gray-400 mb-1">
-                                    {{ $post->created_at->diffForHumans() }}</p>
-                                <a href="/posts?category={{ $post->category->slug }}">
-                                    <span
-                                        class="bg-primary-100 text-primary-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-{{ $post->category->color }}-100 dark:text-primary-800">
-                                        {{ $post->category->name }}
-                                    </span>
-                                </a>
-
-                            </div>
                         </div>
-                    </address>
-                    <h1
-                        class="mb-4 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-4xl dark:text-white">
-                        {{ $post->title }}</h1>
-                </header>
-                <p class="text-xl text-gray-900 dark:text-white">{{ $post->body }}</p>
-            </article>
-        </div>
-    </main>
+                    </div>
+                </address>
+                <h1
+                    class="mb-4 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-4xl dark:text-white">
+                    {{ $post->title }}</h1>
+            </header>
+            <p class="text-xl text-gray-900 dark:text-white">{{ $post->body }}</p>
+        </article>
+    </div>
+</main>
 
-</x-layout>
+@endsection
